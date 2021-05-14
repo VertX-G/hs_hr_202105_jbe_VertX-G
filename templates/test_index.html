@@ -1,0 +1,5 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<p>successful login by {{ session.username }} ({{ users.firstname }} {{ users.lastname }} {{users}}).  <a href="/logout">Log out</a>.</p>
+{% endblock %}

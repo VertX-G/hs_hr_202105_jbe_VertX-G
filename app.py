@@ -1,6 +1,6 @@
 import sqlite3
-from flask import Flask, g
-from flask.templating import render_template
+from flask import Flask, g, redirect, render_template, request, session
+from flask_session import Session
 
 # Pure SQLite
 #https://docs.python.org/3/library/sqlite3.html
@@ -15,10 +15,15 @@ from flask.templating import render_template
 
 DATABASE = 'db/assignment.sqlite3'
 
-'''Configure application'''
+"""Configure application"""
 app = Flask(__name__)
 
-'''Ensure templates are auto-reloaded'''
+"""Configure sessions"""
+app.config['SESSION_PERMANENT'] = False
+app.config['SESSION_TYPE'] = 'filesystem'
+Session(app)
+
+"""Ensure templates are auto-reloaded"""
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 def get_db():
@@ -35,10 +40,34 @@ def close_connection(exception):
     if db is not None:
         db.close()
 
-@app.route("/")
+@app.route('/')
+def index():
+    if not session.get('username'):
+        return redirect('/login')
+
+    cur = get_db().cursor()
+    #cur.execute('SELECT * FROM user')
+    #users = cur.fetchall()
+    users = cur.execute('SELECT * FROM user WHERE username = ?', (session['username'],)) #("SELECT * FROM user WHERE username = ?", request.form.get("username"))
+
+    return render_template('test_index.html', users = users)
+
+@app.route('/login', methods=['GET', 'POST'])
 def login():
+    if request.method == 'POST':
+        session['username'] = request.form.get('username')
+        #username + password
+        return redirect('/')
+    return render_template('login.html')
+"""
     cur = get_db().cursor()
     #cur.execute('SELECT * FROM user')
     #users = cur.fetchall()
     users = cur.execute('SELECT * FROM user')
-    return render_template('login.html', users = users)    
+    return render_template('login.html', users = users)
+"""
+
+@app.route('/logout')   
+def logout():
+    session['username'] = None
+    return redirect('/')

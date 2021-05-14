@@ -1,26 +1,48 @@
-<!--
-    Welcome back {Firstname} {Lastname}!
-    (Currently as <p>, could be <h1> or <h2>)
-
-    "Your last successful login was on {date} at {time}.
-    There were
-    {no}
-    failed logins
-    since then."
-    (<p>)
-
-    [Login journal]     [Log out]
-    (if admin)
--->
-
 {% extends "layout.html" %}
 
 {% block body %}
+<p>successful login</p>
+<!--
+{% if not last_login %}
+<p>Welcome {{user.firstname}} {{user.lastname}}!</p>
+{% else %}
+<p>Welcome back {{user.firstname}} {{user.lastname}}!</p>
+{% endif %}
 
+<p>
+    {% if not last_login %}
+    This is your 1st login. 
+    {% else %}
+    Your last successful login was on {{date}} at {{time}}. 
+    {% endif %}
+
+    There were 
+    {% if failed_logins > 0 %}
+    {{failed_count}}
+    {% else %}
+    no 
+    {% endif %}
+    failed logins 
+    {% if not last_login %}
+    before now
+    {% else %}
+    since then
+    {% endif %}
+    .
+</p>
+
+<p>
+    <a href="">Login journal</a> - <a href="">Log out</a>
+</p>
+-->
+
+
+<!--
     {% if session.name %}
         You are logged in as {{ session.name }}. <a href="/logout">Log out</a>.
     {% else %}
         You are not logged in. <a href="/login">Log in</a>.
     {% endif %}
+-->
 
 {% endblock %}
