@@ -1,5 +1,32 @@
 {% extends "layout.html" %}
 
 {% block body %}
-<p>successful login by {{ session.username }} ({{ users.firstname }} {{ users.lastname }} {{users}}).  <a href="/logout">Log out</a>.</p>
+<p>successful login by {{ session.username }} ({{ session.firstname }} {{ session.lastname }} {{users}}).
+    <a href="/logout">Log out</a>.
+</p>
+
+<div class="container">
+    <div class="section">
+
+        <h2>All Users</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Surname</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Loop through the database entries to display them in the table -->
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.firstname }}</td>
+                    <td>{{ user.lastname }}</td>
+                </tr>
+                {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}

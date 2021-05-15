@@ -12,27 +12,30 @@
 
 {% block body %}
 
-    {% if session.name %}
-        You are logged in as {{ session.name }}. <a href="/logout">Log out</a>.
-    {% else %}
-        You are not logged in. <a href="/login">Log in</a>.
-    {% endif %}
+{% if session.name %}
+You are logged in as {{ session.name }}. <a href="/logout">Log out</a>.
+{% else %}
+You are not logged in. <a href="/login">Log in</a>.
+{% endif %}
 
-    <table>
-        <thead>
-            <tr>
-                <th>Log Journal</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Loop through the database entries to display them in the table -->
-            {% for entry in log %}
-            <tr>
-                <td>{{ entry.date }} - {{ entry.time }} - {{ entry.status }} login - {{ entry.username }}  ({{ entry.firstname }} {{ entry.lastname }})</td>
-            </tr>
-            {% endfor %}
+<table>
+    <thead>
+        <tr>
+            <th>Log Journal</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Loop through the database entries to display them in the table (from recent to oldest) -->
+        {% for entry in log %}
+        <tr>
+            <td>{{ entry.datetime }} - {{ entry.status }} login - {{ entry.username }} ({{ entry.firstname }} {{
+                entry.lastname }})</td>
+        </tr>
+        {% endfor %}
 
-        </tbody>
-    </table>
+    </tbody>
+</table>
+
+<!-- add links to index and logout-->
 
 {% endblock %}
