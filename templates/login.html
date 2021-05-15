@@ -1,7 +1,8 @@
+<!-- Plug into layout template page -->
 {% extends "layout.html" %}
 
 {% block body %}
-<!--
+<!-- TODO
     {% if login_error %}
     <p>Invalid username or password, please try again.</p>
     {% elif logout %}
@@ -9,20 +10,20 @@
     {% endif %}
 -->
 
-<p>Please Login:</p>
+<p>Please Login</p>
 
 <form action="/login" method="post">
 
     <div>
         <label for="username">Username:</label>
-        <!--TODO: Remove default value-->
         <input type="text" id="username" name="username" autocomplete="off" autofocus value="admin">
+        <!--TODO: Remove default value-->
     </div>
 
     <div>
         <label for="password">Password:</label>
-        <!--TODO: Remove default value-->
         <input type="password" id="password" name="password" value="riverBlue33">
+        <!--TODO: Remove default value-->
     </div>
 
     <input type="submit" value="Login">

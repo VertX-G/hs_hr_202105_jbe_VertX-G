@@ -1,52 +1,46 @@
+<!-- Plug into layout template page -->
 {% extends "layout.html" %}
 
 {% block body %}
-<p>successful login</p>
-<!--
-{% if not last_login %}
-<p>Welcome {{user.firstname}} {{user.lastname}}!</p>
+
+<!-- Check if this is the user's first login -->
+{% if not session["last_login"] %}
+<p>Welcome {{ session.firstname }} {{ session.lastname }}!</p>
 {% else %}
-<p>Welcome back {{user.firstname}} {{user.lastname}}!</p>
+<p>Welcome back {{ session.firstname }} {{ session.lastname }}!</p>
 {% endif %}
 
 <p>
-    {% if not last_login %}
-    This is your 1st login. 
+    <!-- Check if this is the user's first login -->
+    {% if not session["last_login"] %}
+    This is your 1st login.
     {% else %}
-    Your last successful login was on {{date}} at {{time}}. 
+    <!--TODO figure out how to get "date with text month" at "time"-->
+    Your last successful login was on {{ session["last_login"] }} at {{ session["last_login"] }}.
     {% endif %}
 
-    There were 
-    {% if failed_logins > 0 %}
-    {{failed_count}}
+    <!-- Number of failed logins since last session -->
+    There
+    {% if not session['failed_logins'] or session['failed_logins'] == 0 %}
+    were no failed logins
+    {% elif session['failed_logins'] == 1 %}
+    was {{ session['failed_logins'] }} failed login
     {% else %}
-    no 
+    were {{ session['failed_logins'] }} failed logins
     {% endif %}
-    failed logins 
-    {% if not last_login %}
-    before now
+    {% if not session["last_login"] %}
+    before now.
     {% else %}
-    since then
+    since then.
     {% endif %}
-    .
 </p>
 
-<p>
-    {% if isadmin %}
-    <a href="">Login journal</a>
+<P>
+    <!-- Check if this user has admin privileges -->
+    {% if session.isadmin == 1 %}
+    <a href="/log">Login journal</a> -
     {% endif %}
-    
-    - <a href="">Log out</a>
-</p>
--->
-
-
-<!--
-    {% if session.name %}
-        You are logged in as {{ session.name }}. <a href="/logout">Log out</a>.
-    {% else %}
-        You are not logged in. <a href="/login">Log in</a>.
-    {% endif %}
--->
+    <a href="/logout">Log out</a>
+</P>
 
 {% endblock %}

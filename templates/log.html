@@ -1,41 +1,26 @@
-<!--
-    Log Journal
-    (currently as <p>, could possibly be <h1> or <h2>)
-
-    date - time - successful/failure login - username (Firstname Surname)
-    (currently as <code> tag with <br> between, could be table rows)
-
-    [Index]      [Log out]
--->
-
+<!-- Plug into layout template page -->
 {% extends "layout.html" %}
-
 {% block body %}
 
-{% if session.name %}
-You are logged in as {{ session.name }}. <a href="/logout">Log out</a>.
-{% else %}
-You are not logged in. <a href="/login">Log in</a>.
+<!-- Check if this user has admin privileges -->
+{% if session.isadmin == 1 %}
+<p>Log journal</p>
+<code>
+    <!-- Iterate through each log entry -->
+    {% for log in logs %}
+    {{ log.log_time }} -
+    {% if log.login_success %}
+    success
+    {% else %}
+    failure
+    {% endif %}
+    login -
+    {{ log.username }} ({{ log.firstname }} {{log.lastname }})
+    <br>
+    {% endfor %}
+</code>
+<P>
+    <a href="/">Index</a> - <a href="/logout">Log out</a>
+</P>
 {% endif %}
-
-<table>
-    <thead>
-        <tr>
-            <th>Log Journal</th>
-        </tr>
-    </thead>
-    <tbody>
-        <!-- Loop through the database entries to display them in the table (from recent to oldest) -->
-        {% for entry in log %}
-        <tr>
-            <td>{{ entry.datetime }} - {{ entry.status }} login - {{ entry.username }} ({{ entry.firstname }} {{
-                entry.lastname }})</td>
-        </tr>
-        {% endfor %}
-
-    </tbody>
-</table>
-
-<!-- add links to index and logout-->
-
 {% endblock %}
