@@ -20,8 +20,7 @@
     Your last successful login was on {{ session["last_login"].strftime("%d %B %Y at %H:%M:%S UTC") }}.
     {% endif %}
 
-    <!-- Number of failed logins since last session -->
-    <!-- TODO  if first login with previous failed logins, failed logins should be printed-->
+    <!-- Number of failed logins -->
     There
     {% if session['failed_logins'] > 1%}
     were {{ session['failed_logins'] }} failed logins
@@ -38,9 +37,9 @@
 </p>
 
 <P>
-    <!-- Check if this user has admin privileges -->
+    <!-- Check if user has admin privileges -->
     {% if session.isadmin == 1 %}
-    <a href="/log">Login journal</a> -
+    <a href="/log">Log journal</a> -
     {% endif %}
     <a href="/logout">Log out</a>
 </P>

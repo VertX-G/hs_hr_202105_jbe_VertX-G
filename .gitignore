@@ -1,7 +1,8 @@
 .vscode
+
 # debug
-CreateTable&AddEntry.sql
-DeleteTable.sql
+*.sql
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
