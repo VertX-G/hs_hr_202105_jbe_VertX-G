@@ -2,13 +2,9 @@
 {% extends "layout.html" %}
 
 {% block body %}
-<!-- TODO
-    {% if login_error %}
-    <p>Invalid username or password, please try again.</p>
-    {% elif logout %}
-    <p>You have successfully logged out, see you soon.</p>
-    {% endif %}
--->
+{% if message %}
+<p>{{ message }}</p>
+{% endif %}
 
 <p>Please Login</p>
 

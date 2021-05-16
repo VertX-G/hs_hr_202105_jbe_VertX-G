@@ -1,8 +1,9 @@
 import sqlite3
-from flask import Flask, g, redirect, render_template, request, session
+from flask import Flask, g, redirect, render_template, request, session, url_for
 from flask_session import Session
 import hashlib
 from datetime import datetime
+import time
 
 # from passlib.hash import sha256_crypt
 
@@ -68,6 +69,9 @@ def index():
     """only access index.html if a valid session is in progress"""
     if not session.get("username"):
         return redirect("/login")
+        if request.args["message"]:
+            message = request.args["message"]
+        return redirect("/login", message=message)
 
     # cur = get_db().cursor()
     # cur.execute("SELECT * FROM user")
@@ -82,6 +86,7 @@ def index():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    message = ""
     if request.method == "POST":
         """Get username from form"""
         username_attempt = request.form.get("username")
@@ -93,13 +98,13 @@ def login():
         # print(f"Password Attempt: {password_attempt}")
 
         """Create login_log table if it doesnt exist"""
+        # TODO see if we can move the create table to only happen when a valid username is successfully or not logged in.
         cur = get_db().cursor()
         cur.execute(
             "CREATE TABLE IF NOT EXISTS login_log (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, login_success INTEGER NOT NULL, log_time TEXT NOT NULL, user_id INTEGER NOT NULL, FOREIGN KEY (user_id) REFERENCES user(id))"
         )
 
         """Check if username exists in database"""
-        # TODO basic authentication
         user_exists = cur.execute(
             "SELECT * FROM user WHERE username = ?", [username_attempt]
         ).fetchone()
@@ -123,21 +128,25 @@ def login():
                 """
                 """Check last login"""
                 last_login = cur.execute(
-                    "SELECT log_time FROM login_log WHERE user_id = ? ORDER BY log_time DESC LIMIT 1",
+                    "SELECT log_time FROM login_log WHERE login_success = 1 AND user_id = ? ORDER BY log_time DESC LIMIT 1",
                     [user_exists["id"]],
                 ).fetchone()
 
                 if last_login:
                     """Get last login time"""
-                    session["last_login"] = last_login["log_time"]
+                    session["last_login"] = datetime.strptime(
+                        last_login["log_time"], "%Y-%m-%d %H:%M:%S"
+                    )
+                    # session["last_login_date"] = last_login["log_time"]
+                    # session["last_login_time"] = last_login["log_time"]
                     # print(f"last login: {session['last_login']}")
 
                     """Count failed logins"""
                     session["failed_logins"] = cur.execute(
-                        "SELECT COUNT(*) FROM login_log WHERE user_id = ? AND login_success = 0",  # TODO only count failed logins after last successful login
-                        [user_exists["id"]],
-                    ).fetchone()["COUNT(*)"]
-                    # print(f"number of failed logins: {session['failed_logins']}")
+                        "SELECT COUNT(*) AS C FROM login_log WHERE login_success = 0 AND log_time > ? AND user_id = ?",
+                        [last_login["log_time"], user_exists["id"]],
+                    ).fetchone()["C"]
+                    # print(f"failed logins: {session['failed_logins']}")
 
                 # session['last_login_datetime']
                 """Log successfull login"""
@@ -145,7 +154,18 @@ def login():
                 return redirect("/")
             """Log failed login"""
             log_login(user_exists["id"], 0)
-    return render_template("login.html")
+        # return render_template("login.html")
+
+        message = "Invalid username or password, please try again."
+
+    if "logout" in request.args:
+        message = "You have successfully logged out, see you soon."
+
+    """
+    if request.args["message"]:
+        message = request.args["message"]
+    """
+    return render_template("login.html", message=message)
 
 
 """
@@ -155,6 +175,8 @@ def login():
     users = cur.execute('SELECT * FROM user')
     return render_template('login.html', users = users)
 """
+
+"""Log page"""
 
 
 @app.route("/log")
@@ -177,4 +199,11 @@ def log():
 @app.route("/logout")
 def logout():
     session.clear()
-    return redirect("/")
+    message = "You have successfully logged out, see you soon."
+    logout = True
+    # return redirect("/login", message=message)
+    # return redirect(url_for("/", message=message))
+    # return redirect("/")
+    # return redirect("/login")
+    return redirect("/login?logout")
+    # return redirect("/login", logout=logout)

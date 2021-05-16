@@ -4,29 +4,31 @@
 {% block body %}
 
 <!-- Check if this is the user's first login -->
-{% if not session["last_login"] %}
-<p>Welcome {{ session.firstname }} {{ session.lastname }}!</p>
-{% else %}
-<p>Welcome back {{ session.firstname }} {{ session.lastname }}!</p>
-{% endif %}
+<p>
+    Welcome
+    {% if session["last_login"] %}
+    back
+    {% endif %}
+    {{ session.firstname }} {{ session.lastname }}!
+</p>
 
 <p>
     <!-- Check if this is the user's first login -->
     {% if not session["last_login"] %}
     This is your 1st login.
     {% else %}
-    <!--TODO figure out how to get "date with text month" at "time"-->
-    Your last successful login was on {{ session["last_login"] }} at {{ session["last_login"] }}.
+    Your last successful login was on {{ session["last_login"].strftime("%d %B %Y at %H:%M:%S UTC") }}.
     {% endif %}
 
     <!-- Number of failed logins since last session -->
+    <!-- TODO  if first login with previous failed logins, failed logins should be printed-->
     There
-    {% if not session['failed_logins'] or session['failed_logins'] == 0 %}
-    were no failed logins
-    {% elif session['failed_logins'] == 1 %}
-    was {{ session['failed_logins'] }} failed login
-    {% else %}
+    {% if session['failed_logins'] > 1%}
     were {{ session['failed_logins'] }} failed logins
+    {% elif session['failed_logins'] == 1 %}
+    was 1 failed login
+    {% else %}
+    were no failed logins
     {% endif %}
     {% if not session["last_login"] %}
     before now.
